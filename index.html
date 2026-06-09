@@ -3,21 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>About My Family - Writing Exercise</title>
+<title>Opinion Essay Builder - Video Games and Fitness</title>
 
 <style>
+*{
+    box-sizing:border-box;
+}
+
 body{
     font-family: Arial, sans-serif;
-    max-width: 900px;
-    margin: auto;
-    padding: 20px;
     background:#f4f6f9;
+    margin:0;
+    padding:20px;
 }
 
 .container{
+    max-width:1100px;
+    margin:auto;
     background:white;
     padding:25px;
-    border-radius:10px;
+    border-radius:12px;
     box-shadow:0 0 10px rgba(0,0,0,.1);
 }
 
@@ -25,16 +30,28 @@ h1,h2{
     color:#2c3e50;
 }
 
-textarea{
-    width:100%;
-    min-height:120px;
-    padding:10px;
-    margin-top:10px;
+.text-box{
+    background:#eef6ff;
+    border-left:5px solid #3498db;
+    padding:20px;
+    border-radius:8px;
+    margin-bottom:25px;
 }
 
-input{
-    padding:8px;
-    margin:5px;
+.question{
+    margin-bottom:15px;
+}
+
+input, textarea{
+    width:100%;
+    padding:10px;
+    border:1px solid #ccc;
+    border-radius:5px;
+    margin-top:5px;
+}
+
+textarea{
+    min-height:80px;
 }
 
 button{
@@ -44,20 +61,41 @@ button{
     padding:12px 20px;
     border-radius:5px;
     cursor:pointer;
+    margin-top:15px;
 }
 
 button:hover{
     background:#2980b9;
 }
 
-.correct{
-    color:green;
+.result{
+    margin-top:15px;
+    font-size:18px;
     font-weight:bold;
 }
 
-.wrong{
-    color:red;
-    font-weight:bold;
+.essay-output{
+    margin-top:20px;
+    background:#fafafa;
+    border:1px solid #ddd;
+    border-radius:8px;
+    padding:20px;
+    white-space:pre-wrap;
+}
+
+.feedback{
+    margin-top:20px;
+    background:#f8f9fa;
+    border-radius:8px;
+    padding:15px;
+}
+
+.good{
+    color:green;
+}
+
+.warning{
+    color:orange;
 }
 </style>
 </head>
@@ -65,63 +103,170 @@ button:hover{
 
 <div class="container">
 
+<h1>Opinion Essay Builder</h1>
+
+<h2>Read the Model Essay</h2>
+
+<div class="text-box">
+<p>
+Nowadays, many teenagers have got video consoles at home and they often like playing active video games.
+</p>
+
+<p>
+First of all, I think that active video games are a good way to keep fit. There are lots of different types of exercise you can do and you can play them in the comfort of your own home.
+</p>
+
+<p>
+In addition, you can play them whenever you want. Some people think that it's better to do exercise outside in the fresh air. Although this is true, active video games are a useful alternative when the weather is bad.
+</p>
+
+<p>
+To sum up, I believe that video games are a fun and social way to keep fit.
+</p>
+</div>
+
 <hr>
 
-<h2>Part A: Fill in the blanks</h2>
+<h2>Part A: Reading Comprehension</h2>
 
-<p>1. Kelly lives in
-<input id="q1"></p>
+<div class="question">
+1. Why does the writer think active video games are good?
+<input type="text" id="q1">
+</div>
 
-<p>2. Kelly's mother's name is
-<input id="q2"></p>
+<div class="question">
+2. Name one activity mentioned in the essay.
+<input type="text" id="q2">
+</div>
 
-<p>3. Kelly's father works in a
-<input id="q3"></p>
+<div class="question">
+3. What is another advantage of active video games?
+<input type="text" id="q3">
+</div>
 
-<p>4. Kelly's sister loves listening to
-<input id="q4"></p>
+<div class="question">
+4. What alternative viewpoint is mentioned?
+<input type="text" id="q4">
+</div>
 
-<p>5. Brandy is a pet
-<input id="q5"></p>
+<div class="question">
+5. Does the writer support active video games?
+<input type="text" id="q5">
+</div>
 
-<button onclick="checkAnswers()">Check Answers</button>
+<button onclick="checkReading()">Check Answers</button>
 
-<p id="result"></p>
+<div id="readingScore" class="result"></div>
 
 <hr>
 
-<h2>Part B: Write About Your Family</h2>
+<h2>Part B: Build Your Own Opinion Essay</h2>
 
-<p>Write 5–8 sentences about your family.</p>
+<label>Essay Topic</label>
+<input type="text" id="topic"
+placeholder="Example: Social Media is Useful for Students">
 
-<textarea placeholder="My name is..."></textarea>
+<label>Your Opinion</label>
+<textarea id="opinion"
+placeholder="Example: I think social media is useful because..."></textarea>
+
+<label>Reason 1</label>
+<textarea id="reason1"></textarea>
+
+<label>Reason 2</label>
+<textarea id="reason2"></textarea>
+
+<label>Opposing View</label>
+<textarea id="opposing"></textarea>
+
+<label>Your Response to the Opposing View</label>
+<textarea id="response"></textarea>
+
+<label>Conclusion</label>
+<textarea id="conclusion"></textarea>
+
+<button onclick="generateEssay()">Generate My Essay</button>
+
+<div id="essayContainer"></div>
 
 </div>
 
 <script>
-function checkAnswers(){
+
+function checkReading(){
 
 let score = 0;
 
-const answers = {
-q1:"california",
-q2:"carmen",
-q3:"bank",
-q4:"music",
-q5:"dog"
-};
+const q1 = document.getElementById("q1").value.toLowerCase();
+const q2 = document.getElementById("q2").value.toLowerCase();
+const q3 = document.getElementById("q3").value.toLowerCase();
+const q4 = document.getElementById("q4").value.toLowerCase();
+const q5 = document.getElementById("q5").value.toLowerCase();
 
-for(let id in answers){
-let user = document.getElementById(id).value.trim().toLowerCase();
+if(q1.includes("fit") || q1.includes("exercise")) score++;
+if(q2.includes("basketball") || q2.includes("dance") || q2.includes("water")) score++;
+if(q3.includes("home") || q3.includes("friends") || q3.includes("whenever")) score++;
+if(q4.includes("outside") || q4.includes("fresh air")) score++;
+if(q5.includes("yes") || q5.includes("support")) score++;
 
-if(user === answers[id]){
-score++;
-}
+document.getElementById("readingScore").innerHTML =
+"Reading Score: " + score + " / 5";
 }
 
-document.getElementById("result").innerHTML =
-"You got " + score + " out of 5 correct!";
+function generateEssay(){
+
+let topic = document.getElementById("topic").value;
+let opinion = document.getElementById("opinion").value;
+let reason1 = document.getElementById("reason1").value;
+let reason2 = document.getElementById("reason2").value;
+let opposing = document.getElementById("opposing").value;
+let response = document.getElementById("response").value;
+let conclusion = document.getElementById("conclusion").value;
+
+let essay =
+
+topic + "\n\n" +
+
+"INTRODUCTION\n" +
+"Nowadays, " + topic.toLowerCase() + " is an important issue. " +
+opinion + "\n\n" +
+
+"ARGUMENTS FOR\n" +
+"First of all, " + reason1 + ".\n\n" +
+"In addition, " + reason2 + ".\n\n" +
+
+"COUNTERARGUMENT\n" +
+"Some people think that " + opposing + ".\n\n" +
+"Although this may be true, " + response + ".\n\n" +
+
+"CONCLUSION\n" +
+"To sum up, " + conclusion + ".";
+
+let wordCount = essay.trim().split(/\s+/).length;
+
+let feedback = "<div class='feedback'><h3>Essay Feedback</h3>";
+
+feedback += "<p class='good'>✔ Introduction included</p>";
+feedback += "<p class='good'>✔ Supporting arguments included</p>";
+feedback += "<p class='good'>✔ Counterargument included</p>";
+feedback += "<p class='good'>✔ Conclusion included</p>";
+
+if(wordCount >= 120){
+feedback += "<p class='good'>✔ Good essay length</p>";
+}else{
+feedback += "<p class='warning'>⚠ Add more details (target: 120+ words)</p>";
 }
+
+feedback += "<p><strong>Total Words:</strong> " + wordCount + "</p>";
+feedback += "</div>";
+
+document.getElementById("essayContainer").innerHTML =
+"<div class='essay-output'><h3>Your Essay</h3>" +
+essay +
+"</div>" +
+feedback;
+}
+
 </script>
 
 </body>
